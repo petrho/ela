@@ -1,0 +1,48 @@
+---
+- name: check and upgrade openjdk
+  gather_facts: no
+  hosts: tomcati
+  vars:
+    usrjava: /usr/java
+#    path: /mnt/nfsegje
+    path: /opt/farma/repo
+    jdktgz : OpenJDK17U-jdk_x64_linux_hotspot_17.0.5_8.tar.gz   # tarball
+    jdk : 17.0.5+8                                              # directory
+
+  tasks:
+    - name: mkdir {{usrjava}} if not exist
+      file: 
+        path: "{{usrjava}}"
+        state: directory
+
+    - name: co je v /usr/java
+      shell: ls -l {{usrjava}}
+      register: rpm
+      ignore_errors: True
+    - debug: var=rpm.stdout_lines
+
+    - name: unarchive {{jdktgz}}
+      unarchive:
+        src: "{{path}}/{{jdktgz}}"
+        dest: "{{usrjava}}"
+        remote_src: yes
+
+    - name: co je v /usr/java2
+      shell: ls -l {{usrjava}}
+      register: rpm
+    - debug: var=rpm.stdout_lines
+
+    - name: find link destination
+      command: "find {{usrjava}} -name jdk-{{jdk}}*"
+      register: destination
+      ignore_errors: True
+    - debug: var=destination.stdout
+
+    - meta: end_play
+
+    - file:
+        src: "{{destination.stdout}}"
+        dest: "{{usrjava}}/latest"
+        owner: root
+        group: root
+        state: link
