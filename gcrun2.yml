@@ -1,0 +1,30 @@
+---
+- name: run GC.run on servers
+  gather_facts: no
+  #hosts: aspwebapp09 # aspwebapp23
+  #hosts: tomcati
+
+  vars:
+    cmd: top -b -n 1|grep java|cut -c1-60
+
+  tasks:
+
+    - name: top
+      shell: "{{ cmd }}"
+      register: list1
+    - debug: var=list1.stdout_lines
+
+    - name: pidof
+      shell: "pidof java"
+      register: list2
+    - debug: var=list2.stdout_lines
+
+    - name: jcmd
+      shell: "for i in `pidof java`; do /usr/java/latest/bin/jcmd $i GC.run ; done"
+      register: list4
+    - debug: var=list4.stdout_lines
+
+    - name: top
+      shell: "{{ cmd }}"
+      register: list1
+    - debug: var=list1.stdout_lines
