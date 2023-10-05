@@ -2,7 +2,7 @@
 - name: run GC.run on servers
   gather_facts: no
   #hosts: aspwebapp09 # aspwebapp23
-  hosts: tomcati
+  hosts: aspwebapp15
 
   vars:
     cmd: top -b -n 1|grep java|cut -c1-60
