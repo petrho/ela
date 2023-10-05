@@ -1,7 +1,7 @@
 ---
 - name: check and upgrade openjdk
   gather_facts: no
-  hosts: tomcati
+  hosts: prgfarm03 # tomcati
   vars:
     usrjava: /usr/java
 #    path: /mnt/nfsegje
